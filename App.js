@@ -10,9 +10,12 @@ app.use(bodyParser.json())
 
 
 let studentList = [
-    {name: "张三", age: 7, id: 1, sex: 0, class: 1},
-    {name: "平平", age: 6, id: 2, sex: 0, class: 1},
-    {name: "果果", age: 8, id: 3, sex: 0, class: 2}
+    {name: "张三", age: 7, id: 1, sex: 0, classId: 1,},
+    {name: "张三2", age: 7, id: 2, sex: 0, classId: 1,},
+    {name: "张三3", age: 7, id: 3, sex: 0, classId: 1,},
+    {name: "平平", age: 6, id: 4, sex: 1, classId: 1},
+    {name: "果果", age: 8, id: 5, sex: 1, classId: 2},
+    {name: "appple", age: 8, id: 6, sex: 1, classId: 2},
 ];
 let classList = [
     {id: 1, name: '一年级1班'},
@@ -25,7 +28,30 @@ let classList = [
  * add/delete/update 单个处理，如学生表修改了两条记录，会调两次update 新增了三条记录，会调三次insert接口，但是批量处理是发一次请求，传回数组项
  */
 app.get("/studentList", (req, res) => {
-    res.json(studentList);
+    let Authorization = req.headers["authorization"];
+    console.log(Authorization)
+    if(Authorization==1){
+        res.json([studentList[0],studentList[1],studentList[2]]);
+    }else  if(Authorization==2) {
+        res.json([studentList[3],studentList[4],studentList[5
+            ]]);
+    }else{
+        res.json(studentList);
+    }
+
+});
+
+app.get("/studentList/:name", (req, res) => {
+    const {params} = req;
+    console.log(params)
+    let str = params.name
+    let temp = []
+    studentList.forEach(item=>{
+        if(item.name.indexOf(str)!=-1){
+            temp.push(item)
+        }
+    })
+    res.json(temp);
 });
 
 app.post("/student/batchUpdate", (req, res) => {
@@ -55,7 +81,10 @@ app.post("/student/add", (req, res) => {
 });
 app.post("/student/update", (req, res) => {
     studentList.forEach((item, index) => {
-        if (item.id == req.body.id) {
+        // if (item.id == req.body.id) {
+        //     studentList[index] = req.body
+        // }
+        if (item.name == req.body.name) {
             studentList[index] = req.body
         }
     })
@@ -72,6 +101,19 @@ app.delete("/student/delete", (req, res) => {
 
 app.get("/classList", (req, res) => {
     res.json(classList);
+});
+
+app.get("/classList/:name", (req, res) => {
+    const {params} = req;
+    console.log(params)
+    let str = params.name
+    let temp = []
+    classList.forEach(item=>{
+        if(item.name.indexOf(str)!=-1){
+            temp.push(item)
+        }
+    })
+    res.json(temp);
 });
 app.post("/class/batchUpdate", (req, res) => {
     let obj = []
